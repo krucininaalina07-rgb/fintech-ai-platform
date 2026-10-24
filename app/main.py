@@ -4,12 +4,20 @@ from fastapi.staticfiles import StaticFiles
 from typing import List
 import random
 from datetime import datetime
-from .engine import market_data, train_predict, backtest, SYMBOLS
+from .engine import market_data, train_predict, backtest, SYMBOLS, warm_up
+import sys
+
+sys.dont_write_bytecode = True
 
 app = FastAPI(title='Hybrid AI Market Intelligence', version='0.1.0')
 app.mount('/static', StaticFiles(directory='static'), name='static')
 
 PORTFOLIO: List[str] = []
+
+@app.on_event("startup")
+def startup_event():
+    # Этот блок запускается один раз при старте сервера
+    warm_up()
 
 @app.get('/')
 def home(): return FileResponse('static/index.html')
@@ -47,30 +55,25 @@ def add_to_twin(symbol: str):
 def get_twin():
     return {'portfolio': PORTFOLIO}
 
-# Новый эндпоинт для живой ленты
 @app.get('/api/events')
 def get_events():
     events = []
     for sym in SYMBOLS.keys():
         try:
             f = train_predict(sym)[1]
-            # Генерируем события на основе реальных расчетов
             if f['regime'] == 'bullish':
                 events.append(f"📈 {sym}: Смена режима на бычий (сильный тренд)")
             elif f['regime'] == 'bearish':
                 events.append(f"📉 {sym}: Смена режима на медвежий (риск падения)")
-            
             if f['risk_volatility'] > 0.35:
                 events.append(f"⚠️ {sym}: Высокая волатильность ({round(f['risk_volatility']*100)}%)")
             elif f['confidence'] > 0.7:
                 events.append(f"🎯 {sym}: Высокая уверенность модели ({round(f['confidence']*100)}%)")
-        except:
+        except Exception:
             pass
     
-    # Добавляем пару системных событий для солидности
     events.append("🤖 Нейросеть завершила переобучение на новых данных Мосбиржи")
     events.append("👤 Эксперт проверил прогноз по SBER")
     
-    # Перемешиваем и берем 5 последних
     random.shuffle(events)
     return {"events": events[:5], "time": datetime.now().strftime("%H:%M")}
