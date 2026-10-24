@@ -8,26 +8,23 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
 import moexalgo
 
-# Российские тикеры и их примерная базовая цена (для синтетики)
 SYMBOLS={"SBER":250.0,"GAZP":130.0,"LKOH":7000.0,"YNDX":4000.0,"GMKN":15000.0,"ROSN":550.0}
 
 def market_data(symbol='SBER', n=520):
     symbol = symbol.upper()
     
-    # Пытаемся скачать реальные данные с Мосбиржи (с предохранителем)
-    try:
-        # Запрашиваем дневные свечи (D1)
-        df = moexalgo.Market(symbol).candles(start=pd.Timestamp.now() - pd.Timedelta(days=n*2), end=pd.Timestamp.now(), period='D1')
-        if df is not None and not df.empty:
-            df = df.tail(n).copy()
-            df['ts'] = pd.to_datetime(df['begin'])
-            # Приводим названия колонок к нужному формату
-            df = df.rename(columns={'open': 'open', 'high': 'high', 'low': 'low', 'close': 'close', 'volume': 'volume'})
-            return df[['ts', 'open', 'high', 'low', 'close', 'volume']]
-    except Exception:
-        pass # Если упало (нет интернета/ошибка API), идем в fallback ниже
+    # Временно отключено для Render Free Tier (не хватает памяти)
+    # try:
+    #     df = moexalgo.Market(symbol).candles(start=pd.Timestamp.now() - pd.Timedelta(days=n*2), end=pd.Timestamp.now(), period='D1')
+    #     if df is not None and not df.empty:
+    #         df = df.tail(n).copy()
+    #         df['ts'] = pd.to_datetime(df['begin'])
+    #         df = df.rename(columns={'open': 'open', 'high': 'high', 'low': 'low', 'close': 'close', 'volume': 'volume'})
+    #         return df[['ts', 'open', 'high', 'low', 'close', 'volume']]
+    # except Exception:
+    #     pass
 
-    # Fallback: Генерация синтетики (работает без интернета)
+    # Fallback: Генерация синтетики
     base=SYMBOLS.get(symbol,100.0)
     seed=sum(map(ord,symbol))+42; rng=np.random.default_rng(seed)
     regime=np.sin(np.arange(n)/42)*0.0009
@@ -56,7 +53,7 @@ COLS=['ret1','ret5','macd','rsi','vol20','atr','mom20','vol_z']
 def train_predict(symbol):
     f=features(market_data(symbol)); split=int(len(f)*.8); tr=f.iloc[:split]; te=f.iloc[split:-5] if len(f)-split>5 else f.iloc[split:]
     X,y=tr[COLS],tr.target
-    rf=RandomForestClassifier(n_estimators=30,max_depth=5,min_samples_leaf=5,random_state=7).fit(X,y)
+    rf=RandomForestClassifier(n_estimators=20,max_depth=5,min_samples_leaf=5,random_state=7).fit(X,y)
     lr=LogisticRegression(max_iter=1000).fit(X,y)
     last=f.iloc[[-1]][COLS]; p_rf=float(rf.predict_proba(last)[0,1]); p_lr=float(lr.predict_proba(last)[0,1])
     row=f.iloc[-1]; ta=0.5 + .16*np.tanh(row.mom20*8)+.10*np.tanh(row.macd/(row.close*.01+1e-9))-.10*np.tanh((row.rsi-50)/20)
