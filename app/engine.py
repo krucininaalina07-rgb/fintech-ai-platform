@@ -56,7 +56,7 @@ COLS=['ret1','ret5','macd','rsi','vol20','atr','mom20','vol_z']
 def train_predict(symbol):
     f=features(market_data(symbol)); split=int(len(f)*.8); tr=f.iloc[:split]; te=f.iloc[split:-5] if len(f)-split>5 else f.iloc[split:]
     X,y=tr[COLS],tr.target
-    rf=RandomForestClassifier(n_estimators=120,max_depth=5,min_samples_leaf=5,random_state=7).fit(X,y)
+    rf=RandomForestClassifier(n_estimators=30,max_depth=5,min_samples_leaf=5,random_state=7).fit(X,y)
     lr=LogisticRegression(max_iter=1000).fit(X,y)
     last=f.iloc[[-1]][COLS]; p_rf=float(rf.predict_proba(last)[0,1]); p_lr=float(lr.predict_proba(last)[0,1])
     row=f.iloc[-1]; ta=0.5 + .16*np.tanh(row.mom20*8)+.10*np.tanh(row.macd/(row.close*.01+1e-9))-.10*np.tanh((row.rsi-50)/20)
