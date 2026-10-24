@@ -1,0 +1,263 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Гибридная ИИ-платформа биржевой аналитики</title><style>
+.event-item { padding: 8px 0; border-bottom: 1px solid #26304a; display: flex; gap: 8px; align-items: flex-start; }
+.event-item:last-child { border-bottom: none; }
+:root{font-family:Inter,system-ui;background:#0b1020;color:#e7ecf7;font-size:18px}body{margin:0}
+.top{padding:12px 24px;border-bottom:1px solid #28304a;display:flex;justify-content:space-between;align-items:center;}
+.header-left { display: flex; align-items: center; gap: 20px; font-size: 18px; font-weight: 700; }
+.search-box { display: flex; align-items: center; background: #121a2e; border: 1px solid #27324e; border-radius: 8px; padding: 4px 10px; cursor: pointer; transition: 0.2s; }
+.search-box input { background: transparent; border: none; color: #fff; outline: none; width: 0px; padding: 0; transition: 0.3s; font-size: 14px; }
+.search-box.active input { width: 150px; padding: 4px; }
+.search-box.active { background: #18233c; border-color: #4a6fa5; }
+.search-icon { font-size: 16px; color: #8fa0bd; cursor: pointer; }
+.header-center { display: flex; align-items: center; gap: 20px; background: #121a2e; padding: 6px 20px; border-radius: 12px; border: 1px solid #27324e; }
+.header-center .balance { font-size: 20px; font-weight: 700; color: #fff; }
+.header-center .change { font-size: 14px; color: #4ade80; font-weight: 600; }
+.header-right { display: flex; align-items: center; gap: 16px; }
+.header-btn { padding: 8px 16px; background: #243353; color: #fff; border: 1px solid #4a6fa5; border-radius: 8px; cursor: pointer; font-size: 14px; text-decoration:none; display:inline-block; }
+.header-btn:hover { background: #2f426a; }
+.icon-btn { background: transparent; border: none; color: #8fa0bd; font-size: 20px; cursor: pointer; position: relative; padding: 4px; }
+.icon-btn:hover { color: #fff; }
+.notification-dot { position: absolute; top: 2px; right: 2px; width: 10px; height: 10px; background: #ef4444; border-radius: 50%; border: 2px solid #0b1020; }
+.profile-menu { position: relative; }
+.avatar { width: 36px; height: 36px; background: #4a6fa5; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; color: #fff; cursor: pointer; }
+.dropdown { display: none; position: absolute; right: 0; top: 45px; background: #121a2e; border: 1px solid #27324e; border-radius: 10px; width: 200px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); z-index: 100; }
+.dropdown.active { display: block; }
+.dropdown a { display: block; padding: 10px 16px; color: #e7ecf7; text-decoration: none; font-size: 14px; border-bottom: 1px solid #28304a; cursor:pointer; }
+.dropdown a:last-child { border-bottom: none; }
+.dropdown a:hover { background: #18233c; }
+.grid{display:grid;grid-template-columns:180px 1fr 300px;gap:14px;padding:14px}
+.card{background:#121a2e;border:1px solid #27324e;border-radius:12px;padding:16px}
+.watch button{display:block;width:100%;margin:7px 0;padding:10px;background:#18233c;color:#dce5f7;border:0;border-radius:8px;text-align:left;cursor:pointer;font-size:15px;}
+.watch button:hover { background: #243353; }
+.big{font-size:32px;font-weight:700}.muted{color:#8fa0bd}
+.bar{height:12px;background:#2b354e;border-radius:8px;overflow:hidden}.fill{height:100%;background:#79a7ff}
+.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+.metric{background:#0d1426;padding:10px;border-radius:9px;font-size:14px;}canvas{width:100%;height:300px}
+.factor{display:flex;justify-content:space-between;border-bottom:1px solid #26304a;padding:8px 0;font-size:15px;}
+.bottom{grid-column:2/4}.badge{padding:5px 9px;border-radius:20px;background:#243353;font-size:14px;}
+.verify-badge{display:inline-block;padding:6px 12px;border-radius:6px;font-size:13px;font-weight:600;margin-bottom:10px;cursor:pointer;user-select:none;border:1px solid transparent;transition:0.2s;}
+.status-ai { background:#1a2a44; color:#79a7ff; border-color:#2b4573; }
+.status-expert { background:#1e3b2e; color:#4ade80; border-color:#2b5c43; }
+.status-adjusted { background:#3b341e; color:#facc15; border-color:#5c502b; }
+.status-review { background:#2b2b2b; color:#a3a3a3; border-color:#4a4a4a; }
+.twin-btn{margin-top:15px;width:100%;padding:10px;background:#243353;color:#fff;border:1px solid #4a6fa5;border-radius:8px;cursor:pointer;font-weight:600;transition:0.2s;font-size:15px;}
+.twin-btn:hover{background:#2f426a;}
+.twin-btn.active{background:#1e3b2e;border-color:#2b5c43;color:#4ade80;cursor:default;}
+.pricing-container { padding: 40px 24px; max-width: 1200px; margin: 0 auto; animation: fadeIn 0.4s ease-out; position: relative; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.back-btn { display: inline-block; padding: 10px 20px; background: #243353; color: #fff; border: 1px solid #4a6fa5; border-radius: 8px; text-decoration: none; font-size: 15px; font-weight: 600; cursor: pointer; margin-bottom: 20px; transition: 0.2s; }
+.back-btn:hover { background: #2f426a; }
+.pricing-header { text-align: center; margin-bottom: 40px; }
+.pricing-header h1 { font-size: 32px; margin-bottom: 10px; color: #fff; }
+.pricing-header p { color: #8fa0bd; font-size: 16px; }
+.pricing-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; align-items: center; }
+.plan-card { background: #121a2e; border: 1px solid #27324e; border-radius: 16px; padding: 30px; display: flex; flex-direction: column; position: relative; transition: transform 0.2s; }
+.plan-card:hover { transform: translateY(-5px); }
+.plan-card.popular { border-color: #79a7ff; background: #151f36; box-shadow: 0 8px 24px rgba(121, 167, 255, 0.15); transform: scale(1.05); }
+.plan-card.popular:hover { transform: scale(1.05) translateY(-5px); }
+.popular-badge { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: #79a7ff; color: #0b1020; font-size: 12px; font-weight: 700; padding: 4px 12px; border-radius: 20px; text-transform: uppercase; letter-spacing: 1px; white-space: nowrap; }
+.plan-title { font-size: 20px; font-weight: 600; margin-bottom: 10px; color: #e7ecf7; }
+.plan-price { font-size: 26px; font-weight: 700; color: #fff; margin-bottom: 5px; }
+.plan-price span { font-size: 14px; color: #8fa0bd; font-weight: 400; }
+.plan-desc { color: #8fa0bd; font-size: 14px; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #27324e; }
+.plan-features { list-style: none; padding: 0; margin: 0 0 30px 0; flex-grow: 1; }
+.plan-features li { color: #e7ecf7; font-size: 14px; margin-bottom: 12px; display: flex; align-items: flex-start; gap: 8px; }
+.plan-features li::before { content: '✓'; color: #79a7ff; font-weight: bold; }
+.plan-btn { width: 100%; padding: 12px; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; border: none; transition: 0.2s; text-align: center; }
+.plan-btn.secondary { background: #243353; color: #fff; }
+.plan-btn.secondary:hover { background: #2f426a; }
+.plan-btn.primary { background: #79a7ff; color: #0b1020; }
+.plan-btn.primary:hover { background: #95bcff; }
+.plan-btn.outline { background: transparent; color: #79a7ff; border: 1px solid #79a7ff; }
+.plan-btn.outline:hover { background: rgba(121, 167, 255, 0.1); }
+@media(max-width:1000px){.header-center{display:none} .pricing-cards { grid-template-columns: 1fr; } .plan-card.popular { transform: none; } .plan-card.popular:hover { transform: translateY(-5px); } }
+@media(max-width:900px){.grid{grid-template-columns:1fr}.bottom{grid-column:auto}.watch{display:none}}
+</style></head><body>
+
+<div class="top">
+  <div class="header-left">
+    <div>ГИБРИДНАЯ ИИ-ПЛАТФОРМА</div>
+    <div class="search-box" id="searchBox">
+      <span class="search-icon" onclick="toggleSearch()">🔍</span>
+      <input type="text" id="searchInput" placeholder="Поиск тикера..." onkeypress="handleSearch(event)">
+    </div>
+  </div>
+  <div class="header-center">
+    <div>
+      <div class="muted" style="font-size:11px;margin-bottom:2px;text-transform:uppercase;">Портфель</div>
+      <div class="balance" id="headerBalance">1 245 000 ₽</div>
+    </div>
+    <div class="change" id="headerChange">+1.2% за сегодня</div>
+  </div>
+  <div class="header-right">
+    <button class="header-btn" onclick="alert('Переход в полный портфель (в разработке)')">Мой портфель</button>
+    <button class="icon-btn" onclick="alert('У вас 1 новое уведомление: Смена режима на BTCUSD')">🔔<span class="notification-dot"></span></button>
+    <div class="profile-menu">
+      <div class="avatar" onclick="toggleProfile()">АС</div>
+      <div class="dropdown" id="profileDropdown">
+        <a onclick="alert('Раздел в разработке')">👤 Мой профиль</a>
+        <a onclick="switchTab('pricing')">💳 Тариф и оплата</a>
+        <a onclick="alert('Раздел в разработке')">⚙️ Настройки</a>
+        <a onclick="alert('Раздел в разработке')">ℹ️ О нас</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="tab-analytics" style="display:block;">
+  <main class="grid">
+    <aside class="card watch"><h3>Список тикеров</h3><div id="watch"></div></aside>
+    <section class="card">
+      <div id="statusBadge" class="verify-badge status-ai" onclick="cycleStatus()" title="Нажмите, чтобы изменить статус">🔵 Проанализировано ИИ</div>
+      <div class="muted" id="symbol">SBER</div>
+      <div class="big" id="price">—</div>
+      <canvas id="chart" width="900" height="300"></canvas>
+      <div class="metrics">
+        <div class="metric">Ожид. доходность 5д<br><b id="exp">—</b></div>
+        <div class="metric">Волатильность<br><b id="vol">—</b></div>
+        <div class="metric">Режим рынка<br><b id="regime">—</b></div>
+        <div class="metric">Калибровка вероятности<br><b id="conf">—</b></div>
+      </div>
+      <button id="twinBtn" class="twin-btn" onclick="addToTwin()">➕ Добавить в цифровой двойник</button>
+    </section>
+    <aside class="card">
+      <h3>ИИ-прогноз</h3>
+      <div class="big" id="score">—</div>
+      <div class="muted">Оценка тренда / 100</div><br>
+      <div>P(рост): <b id="pup">—</b></div>
+      <div class="muted" style="font-size:13px;margin-top:8px;padding:8px;background:#0d1426;border-radius:8px;">
+        Ожидаемый коридор 5д:<br><b id="scenario" style="color:#e7ecf7;font-size:14px;">от — до —</b>
+      </div>
+      <div class="bar" style="margin-top:10px;"><div class="fill" id="fill"></div></div>
+      <h4>Ключевые факторы</h4><div id="factors"></div>
+    </aside>
+    
+    <!-- Лента событий -->
+    <section class="card bottom" style="margin-top: 14px; padding: 16px;">
+      <h3 style="margin-top:0; display:flex; align-items:center; gap:8px;">
+        <span style="color:#ef4444;">🟢</span> Лента событий (онлайн)
+      </h3>
+      <div id="eventsList" style="display:flex; flex-direction:column; gap:10px; color:#8fa0bd; font-size:15px;">
+        <div class="muted">Загрузка событий...</div>
+      </div>
+    </section>
+
+    <section class="card bottom">
+      <h3>Walk-forward бэктест</h3>
+      <div class="metrics">
+        <div class="metric">Доходность<br><b id="br">—</b></div>
+        <div class="metric">Sharpe<br><b id="bs">—</b></div>
+        <div class="metric">Макс. просадка<br><b id="bd">—</b></div>
+      </div>
+      <p class="muted">Данные предоставлены Московской биржей. Прогнозы носят вероятностный характер и не являются инвестиционной рекомендацией.</p>
+    </section>
+  </main>
+</div>
+
+<div id="tab-pricing" style="display:none;">
+  <div class="pricing-container">
+    <a class="back-btn" onclick="switchTab('analytics')">← На главную</a>
+    <div class="pricing-header">
+      <h1>Управление подпиской</h1>
+      <p>Выберите уровень доступа, который соответствует вашим задачам. Все тарифы включают базовую рыночную аналитику и объяснимость прогнозов.</p>
+    </div>
+    <div class="pricing-cards">
+      
+      <!-- Базовый (Оставил старый текст, поменял цену) -->
+      <div class="plan-card">
+        <div class="plan-title">Базовый</div>
+        <div class="plan-price">1 500 – 2 700 ₽ <span>/ мес</span></div>
+        <div class="plan-desc">Для частных инвесторов, которые только начинают.</div>
+        <ul class="plan-features">
+          <li>Портфель до 25 млн рублей</li>
+          <li>Ограниченная верификация (3–5 проверок в месяц)</li>
+          <li>Базовый цифровой двойник</li>
+          <li>Объяснимость прогнозов и уведомления</li>
+        </ul>
+        <button class="plan-btn secondary" onclick="alert('Тариф Базовый выбран!')">Перейти на Базовый</button>
+      </div>
+
+      <!-- Профи (Оставил старый текст, поменял цену) -->
+      <div class="plan-card popular">
+        <div class="popular-badge">Популярный</div>
+        <div class="plan-title">Профи</div>
+        <div class="plan-price">3 000 – 5 000 ₽ <span>/ мес</span></div>
+        <div class="plan-desc">Для активных трейдеров и профессионалов.</div>
+        <ul class="plan-features">
+          <li>Неограниченный размер портфеля</li>
+          <li>Приоритетная верификация экспертами</li>
+          <li>Полный доступ к цифровому двойнику</li>
+          <li>Экспорт отчётов и API для интеграции</li>
+        </ul>
+        <button class="plan-btn primary" onclick="alert('Тариф Профи выбран!')">Перейти на Профи</button>
+      </div>
+
+      <!-- Корпоративный (Оставил старый текст, поменял цену) -->
+      <div class="plan-card">
+        <div class="plan-title">Корпоративный</div>
+        <div class="plan-price">от 100 000 – 300 000 ₽ <span>/ мес</span></div>
+        <div class="plan-desc">Для фондов, банков и команд аналитиков.</div>
+        <ul class="plan-features">
+          <li>Командный доступ с разделением прав</li>
+          <li>Журнал всех решений (аудит)</li>
+          <li>Выделенный эксперт-консультант (SLA)</li>
+          <li>Персональный менеджер и API</li>
+        </ul>
+        <button class="plan-btn outline" onclick="alert('Форма связи отправлена! Мы перезвоним.')">Связаться с нами</button>
+      </div>
+      
+    </div>
+  </div>
+</div>
+
+<script>
+const $=x=>document.getElementById(x);
+let current='SBER'; // Начинаем со Сбера
+let myPortfolio=new Set();
+let currentStatusIndex = 0;
+function switchTab(tab) {
+    if(tab === 'pricing') { $('tab-analytics').style.display = 'none'; $('tab-pricing').style.display = 'block'; $('profileDropdown').classList.remove('active'); } 
+    else { $('tab-analytics').style.display = 'block'; $('tab-pricing').style.display = 'none'; }
+}
+const statuses = [ 
+    { class: 'status-ai', text: '🔵 Проанализировано ИИ' }, 
+    { class: 'status-expert', text: '🟢 Проверено экспертом' },
+    { class: 'status-adjusted', text: '🟡 Скорректировано' },
+    { class: 'status-review', text: '⚪ На проверке' }
+];function toggleSearch() { let box = $('searchBox'); box.classList.toggle('active'); if(box.classList.contains('active')) $('searchInput').focus(); }
+function handleSearch(e) { if(e.key === 'Enter') { let val = $('searchInput').value.toUpperCase().trim(); let buttons = document.querySelectorAll('.watch button'); let found = false; buttons.forEach(b => { if(b.textContent === val) { b.click(); found = true; }}); if(!found) alert('Тикер не найден'); $('searchInput').value = ''; $('searchBox').classList.remove('active'); } }
+function toggleProfile() { $('profileDropdown').classList.toggle('active'); }
+document.addEventListener('click', function(event) { let menu = document.querySelector('.profile-menu'); if (!menu.contains(event.target)) $('profileDropdown').classList.remove('active'); });
+async function j(u){return (await fetch(u)).json()}
+function pct(x){return (x*100).toFixed(1)+'%'}
+function cycleStatus() { currentStatusIndex = (currentStatusIndex + 1) % statuses.length; let badge = $('statusBadge'); let st = statuses[currentStatusIndex]; badge.className = 'verify-badge ' + st.class; badge.textContent = st.text; }
+function draw(data){let c=$('chart'),ctx=c.getContext('2d'),w=c.width,h=c.height;ctx.clearRect(0,0,w,h);let a=data.slice(-120).map(x=>x.close),mn=Math.min(...a),mx=Math.max(...a);ctx.strokeStyle='#79a7ff';ctx.lineWidth=3;ctx.beginPath();a.forEach((v,i)=>{let x=i/(a.length-1)*(w-20)+10,y=h-15-(v-mn)/(mx-mn)*(h-30);i?ctx.lineTo(x,y):ctx.moveTo(x,y)});ctx.stroke()}
+function updateTwinBtn(symbol){let btn=$('twinBtn');if(myPortfolio.has(symbol)){btn.textContent='✅ В цифровом двойнике';btn.classList.add('active');}else{btn.textContent='➕ Добавить в цифровой двойник';btn.classList.remove('active');}}
+function updateHeader() { let bal = $('headerBalance'), chg = $('headerChange'); if (myPortfolio.size > 0) { bal.textContent = '1 245 000 ₽'; chg.textContent = '+1.2% за сегодня'; chg.style.color = '#4ade80'; } else { bal.textContent = '0 ₽'; chg.textContent = 'Портфель пуст'; chg.style.color = '#8fa0bd'; } }
+async function addToTwin(){ if(myPortfolio.has(current))return; try{ let res=await fetch('/api/twin/add/'+current,{method:'POST'}); let data=await res.json(); myPortfolio=new Set(data.portfolio); updateTwinBtn(current); updateHeader(); }catch(e){} }
+async function load(s){
+    current=s;
+    let [m,f,b]=await Promise.all([j('/api/market/'+s),j('/api/forecast/'+s),j('/api/backtest/'+s)]);
+    $('symbol').textContent=s;$('price').textContent='₽'+f.price;$('exp').textContent=pct(f.expected_return_5d);$('vol').textContent=pct(f.risk_volatility);$('regime').textContent=f.regime;$('conf').textContent=pct(f.confidence);$('score').textContent=f.trend_score;$('pup').textContent=pct(f.p_up);
+    let expRet = f.expected_return_5d, vol = f.risk_volatility; $('scenario').textContent = `от ${pct(expRet - (vol*0.5))} до ${pct(expRet + (vol*0.5))}`;
+    $('fill').style.width=(f.p_up*100)+'%';$('factors').innerHTML=f.factors.map(x=>`<div class=factor><span>${x.name}</span><b>${(x.importance*100).toFixed(1)}%</b></div>`).join('');
+    $('br').textContent=pct(b.total_return);$('bs').textContent=b.sharpe;$('bd').textContent=pct(b.max_drawdown);
+    updateTwinBtn(s);draw(m);
+}
+(async()=>{
+    let a=await j('/api/instruments');$('watch').innerHTML=a.map(s=>`<button onclick="load('${s}')">${s}</button>`).join('');
+    try{let p=await j('/api/twin');myPortfolio=new Set(p.portfolio);}catch(e){}
+    updateHeader();load(current);
+})()
+// Загрузка и обновление ленты событий
+async function loadEvents() {
+    try {
+        let e = await j('/api/events');
+        let html = e.events.map(ev => `<div class="event-item">${ev}</div>`).join('');
+        let box = $('eventsList');
+        if(box) box.innerHTML = html;
+    } catch(err) {}
+}
+setInterval(loadEvents, 15000); // обновлять каждые 15 секунд
+loadEvents();
+</script></body></html>
