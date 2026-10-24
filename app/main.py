@@ -1,9 +1,10 @@
-from fastapi import FastAPI, HTTPException, BackgroundTasks
+from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from typing import List
 import random
 from datetime import datetime
+import threading
 from .engine import market_data, train_predict, backtest, SYMBOLS, warm_up
 import sys
 
@@ -15,9 +16,9 @@ app.mount('/static', StaticFiles(directory='static'), name='static')
 PORTFOLIO: List[str] = []
 
 @app.on_event("startup")
-def startup_event(background_tasks: BackgroundTasks):
-    # Запускаем прогрев в фоне, чтобы сервер успел открыть порт для Render
-    background_tasks.add_task(warm_up)
+def startup_event():
+    # Запускаем прогрев в отдельном потоке, чтобы не блокировать запуск сервера
+    threading.Thread(target=warm_up, daemon=True).start()
 
 @app.get('/')
 def home(): return FileResponse('static/index.html')
