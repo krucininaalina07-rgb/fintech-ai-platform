@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, BackgroundTasks
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from typing import List
@@ -15,9 +15,9 @@ app.mount('/static', StaticFiles(directory='static'), name='static')
 PORTFOLIO: List[str] = []
 
 @app.on_event("startup")
-def startup_event():
-    # Этот блок запускается один раз при старте сервера
-    warm_up()
+def startup_event(background_tasks: BackgroundTasks):
+    # Запускаем прогрев в фоне, чтобы сервер успел открыть порт для Render
+    background_tasks.add_task(warm_up)
 
 @app.get('/')
 def home(): return FileResponse('static/index.html')
