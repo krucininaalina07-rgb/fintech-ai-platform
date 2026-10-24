@@ -17,23 +17,21 @@ CACHE_MARKET = {}
 
 def market_data(symbol='SBER', n=520):
     symbol = symbol.upper()
-    if symbol in CACHE_MARKET:
-        return CACHE_MARKET[symbol]
+    
+    # ПОЛНОСТЬЮ ОТКЛЮЧАЕМ МОСБИРЖУ НА RENDER
+    # try:
+    #     df = moexalgo.Market(symbol).candles(start=pd.Timestamp.now() - pd.Timedelta(days=n*2), end=pd.Timestamp.now(), period='D1')
+    #     if df is not None and not df.empty:
+    #         df = df.tail(n).copy()
+    #         df['ts'] = pd.to_datetime(df['begin'])
+    #         df = df.rename(columns={'open': 'open', 'high': 'high', 'low': 'low', 'close': 'close', 'volume': 'volume'})
+    #         res = df[['ts', 'open', 'high', 'low', 'close', 'volume']]
+    #         CACHE_MARKET[symbol] = res
+    #         return res
+    # except Exception as e:
+    #     print(f"MOEX Error: {e}")
 
-    try:
-        # Реальные данные Мосбиржи
-        df = moexalgo.Market(symbol).candles(start=pd.Timestamp.now() - pd.Timedelta(days=n*2), end=pd.Timestamp.now(), period='D1')
-        if df is not None and not df.empty:
-            df = df.tail(n).copy()
-            df['ts'] = pd.to_datetime(df['begin'])
-            df = df.rename(columns={'open': 'open', 'high': 'high', 'low': 'low', 'close': 'close', 'volume': 'volume'})
-            res = df[['ts', 'open', 'high', 'low', 'close', 'volume']]
-            CACHE_MARKET[symbol] = res
-            return res
-    except Exception as e:
-        print(f"MOEX Error: {e}")
-
-    # Fallback (если Мосбиржа недоступна)
+    # Fallback: Генерация синтетики (всегда работает)
     base = SYMBOLS.get(symbol, 100.0)
     seed = sum(map(ord, symbol)) + 42
     rng = np.random.default_rng(seed)
@@ -49,7 +47,6 @@ def market_data(symbol='SBER', n=520):
     res = pd.DataFrame({'ts':dates,'open':open_,'high':high,'low':low,'close':close,'volume':volume})
     CACHE_MARKET[symbol] = res
     return res
-
 def features(df):
     x = df.copy(); c = x.close
     x['ret1'] = np.log(c/c.shift(1)); x['ret5'] = np.log(c/c.shift(5))
